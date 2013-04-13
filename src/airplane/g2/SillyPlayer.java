@@ -1,6 +1,7 @@
 package airplane.g2;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 
 import org.apache.log4j.Logger;
 
@@ -10,6 +11,8 @@ import airplane.sim.Player;
 
 public class SillyPlayer extends Player{
 	private Logger logger = Logger.getLogger(this.getClass()); // for logging
+	//private int starttime[]=null;
+	private ArrayList<Integer> starttime;
 	
 	@Override
 	public String getName() {
@@ -19,7 +22,25 @@ public class SillyPlayer extends Player{
 
 	@Override
 	public void startNewGame(ArrayList<Plane> planes) {
-
+		//starttime=new int[planes.size()];
+		/*Hashtable<Double,Integer> record=new Hashtable<Double,Integer>();
+		for(int i=0;i<planes.size();i++){
+			Plane p=planes.get(i);
+			double dest=p.getDestination().getX()*101+p.getDestination().getY();
+			if(!record.containsKey(dest)){
+				record.put(dest, p.getDepartureTime());
+				starttime[i]=p.getDepartureTime();
+			}else{
+				int next=max(record.get(dest),p.getDepartureTime());
+				next+=5;
+				record.put(dest, next);
+				starttime[i]=next;
+			}
+		}*/
+	}
+	
+	public int max(int a , int b){
+		return a>b?a:b;
 	}
 	
 	@Override
@@ -28,8 +49,8 @@ public class SillyPlayer extends Player{
 		return updatePlanes(planes,round,bearings);
 	}
 	
-	public int startSimulation(ArrayList<Plane> planes, int round, int maxround) {
-		//logger.error("haha, This is a testing player :)");
+	public int  startSimulation(ArrayList<Plane> planes, ArrayList<Integer> starttime, int maxround ){
+		this.starttime=starttime;
 		continueSimulation = true;
     	// make a copy of all the Planes (so the originals don't get affected)
     	ArrayList<Plane> simPlanes = new ArrayList<Plane>();
@@ -46,13 +67,13 @@ public class SillyPlayer extends Player{
     	for (double b : simBearings) {
     		if (b == -2) landed++;
     	}
-    	
+    	int round=0;
     	// now loop through the simulation
     	while(landed != simBearings.length && continueSimulation) {
     		// update the round number
     		round++;
     		if(round>=maxround){
-    			return round;
+    			return -1;
     		}
     		// the player simulates the update of the planes
     		simBearings = simulateUpdate(simPlanes, round, simBearings);
@@ -78,7 +99,7 @@ public class SillyPlayer extends Player{
 	    				}
     				}
     				// if an error occurs
-    				//else return -1 * round;
+    				else return -1 * round;
     			}
     		}
     		// make sure the planes aren't too close to each other
@@ -106,7 +127,7 @@ public class SillyPlayer extends Player{
 		for(int i=0;i<planes.size();i++){
 			//iterate each plane;
 			Plane p1=planes.get(i);
-			if(round<p1.getDepartureTime()){
+			if(round<starttime.get(i)){
 				//it's not ready to take off;
 				continue;
 			}else if(p1.getBearing()==-2){
@@ -120,26 +141,28 @@ public class SillyPlayer extends Player{
 					Plane np=new Plane(p1);
 					double tbearing=target+bias;
 					tbearing=tbearing>=360?tbearing-360:tbearing;
+					tbearing=tbearing<0?tbearing+360:tbearing;
 					np.setBearing(tbearing);
 					if(templist.size()==index){
 						templist.add(np);
 					}else{
 						templist.set(index, np);
 					}
-					if(!willCollision(templist,round)){
-						bearings[i]=target+bias;
+					if(!willCollision(templist,round,100)){
+						bearings[i]=tbearing;
 						break;
 					}else if(bias!=0){
 						tbearing=target-bias;
 						tbearing=tbearing<0?tbearing+360:tbearing;
+						tbearing=tbearing>=360?tbearing-360:tbearing;
 						np.setBearing(tbearing);
 						if(templist.size()==index){
 							templist.add(np);
 						}else{
 							templist.set(index, np);
 						}
-						if(!willCollision(templist,round)){
-							bearings[i]=target-bias;
+						if(!willCollision(templist,round,100)){
+							bearings[i]=tbearing;
 							break;
 						}
 					}
@@ -152,6 +175,7 @@ public class SillyPlayer extends Player{
 				//boolean collisions[]=new boolean[21];
 				double bestbear=0;
 				double mindiff=1000;
+				boolean find =false;
 				double target=calculateBearing(p1.getLocation(), p1.getDestination());
 				for(int bias=0;bias<21;bias++){
 					Plane np=new Plane(p1);
@@ -165,14 +189,44 @@ public class SillyPlayer extends Player{
 					}else{
 						templist.set(index, np);
 					}
-					if(!willCollision(templist,round)){
-						//collisions[bias]=true;
+					if(!willCollision(templist,round,100)){
+							//collisions[bias]=true;
+						find=true;
 						if(onestep(p1,tbearing)<mindiff){
 							bestbear=tbearing;
 							mindiff=onestep(p1,tbearing);
 						}
 					}
 				}
+				
+				/*if(!find){
+					mindiff=1000;
+					for(int bias=0;bias<21;bias++){
+						Plane np=new Plane(p1);
+						double tbearing=standard+bias-10;
+						tbearing=tbearing<0?tbearing+360:tbearing;
+						tbearing=tbearing>=360?tbearing-360:tbearing;
+					
+						np.setBearing(tbearing);
+						if(templist.size()==index){
+							templist.add(np);
+						}else{
+							templist.set(index, np);
+						}
+						int neground=getcount(templist,round,25);
+						if(neground<mindiff){
+							bestbear=tbearing;
+							mindiff=neground;
+						}
+					}
+					
+				}*/
+				if(!find){
+					bestbear=p1.getBearing()+10;
+					logger.error("make turn");
+				}
+				bestbear=bestbear>360?bestbear-360:bestbear;
+				bestbear=bestbear<0?bestbear+360:bestbear;
 				Plane np=new Plane(p1);
 				np.setBearing(bestbear);
 				templist.set(index, np);
@@ -183,7 +237,7 @@ public class SillyPlayer extends Player{
 		for(int j=0;j<bearings.length;j++){
 			message.append(bearings[j]+" ");
 		}
-		logger.error(message.toString());
+		//logger.error(message.toString());
 		return bearings;
 	}
 	
@@ -202,16 +256,29 @@ public class SillyPlayer extends Player{
 		return res>180?360-res:res;
 	}
 	
-	public boolean willCollision(ArrayList<Plane> planes, int round){
+	public boolean willCollision(ArrayList<Plane> planes, int round, int max){
 		ArrayList<Plane> temp=new ArrayList<Plane>();
 		for(Plane p: planes){
 			temp.add(new Plane(p));
 		}
 		StraightPlayer sp=new StraightPlayer();
-		if(sp.startSimulation(temp, round)>0){
+		if(sp.startSimulation(temp, round,round+max)>0){
 			return false;
 		}else{
 			return true;
 		}
+	}
+	
+	public int getcount(ArrayList<Plane> planes, int round, int max){
+		ArrayList<Plane> temp=new ArrayList<Plane>();
+		for(Plane p: planes){
+			temp.add(new Plane(p));
+		}
+		StraightPlayer sp=new StraightPlayer();
+		return sp.startSimulation(temp, round, round+max);
+	}
+	
+	public void setStarttTime(ArrayList<Integer> starttime){
+		this.starttime=starttime;
 	}
 }

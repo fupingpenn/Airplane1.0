@@ -35,10 +35,7 @@ public class StraightPlayer extends Player{
 	}
 	
 	
-	
-	
-	@Override
-	public int startSimulation(ArrayList<Plane> planes, int round) {
+	public int startSimulation(ArrayList<Plane> planes, int round,int maxround) {
 		//logger.error("haha, This is a testing player :)");
 		continueSimulation = true;
     	// make a copy of all the Planes (so the originals don't get affected)
@@ -61,7 +58,7 @@ public class StraightPlayer extends Player{
     	while(landed != simBearings.length && continueSimulation) {
     		// update the round number
     		round++;
-    		if(round>=2000){
+    		if(round>=maxround){
     			return round;
     		}
     		// the player simulates the update of the planes
