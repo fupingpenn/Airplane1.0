@@ -47,7 +47,7 @@ public class GameConfig implements Cloneable{
 	private Properties props;
 	private String confFileName;
 	private Logger log = Logger.getLogger(this.getClass());
-	private File boardFile;
+	public File boardFile;
 	int num_planes = 5;
 	int num_collectors = 1;
 	public static int threshold = 50;

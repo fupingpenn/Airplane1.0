@@ -209,10 +209,10 @@ public final class BoardPanel extends JPanel implements MouseListener,
 								(int) Board.toScreenSpace(40));
 						g2D.setColor(Color.RED);
 						*/
-						g2D.drawOval((int) Board.toScreenSpace(planes.get(i).getX() - GameConfig.SAFETY_RADIUS),
-								(int) Board.toScreenSpace(planes.get(i).getY() - GameConfig.SAFETY_RADIUS),
-								(int) Board.toScreenSpace(GameConfig.SAFETY_RADIUS*2),
-								(int) Board.toScreenSpace(GameConfig.SAFETY_RADIUS*2));
+						g2D.drawOval((int) Board.toScreenSpace(planes.get(i).getX() - GameConfig.SAFETY_RADIUS/2.0),
+								(int) Board.toScreenSpace(planes.get(i).getY() - GameConfig.SAFETY_RADIUS/2.0),
+								(int) Board.toScreenSpace(GameConfig.SAFETY_RADIUS),
+								(int) Board.toScreenSpace(GameConfig.SAFETY_RADIUS));
 						
 						for (int j = 0; j < planes.get(i).getHistory().size()-1; j++) {
 							Point2D.Double start = planes.get(i).getHistory().get(j);

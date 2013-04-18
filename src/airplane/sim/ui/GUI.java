@@ -46,7 +46,7 @@ import airplane.sim.GameListener;
  */
 public final class GUI extends JFrame implements ActionListener, GameListener, ChangeListener
 {
-	private final static String VERSION = "1.0";
+	private final static String VERSION = "1.1";
 	
 	private GameEngine engine;
 	private static final long serialVersionUID = 1L;
@@ -343,12 +343,16 @@ public final class GUI extends JFrame implements ActionListener, GameListener, C
 			break;
 		case MOVEPROCESSED:
 			controlPanel.roundText.setText("" + engine.getCurrentRound());
+			controlPanel.powerText.setText("" + engine.getPower());
+			controlPanel.delayText.setText("" + engine.getDelay());
 			boardFrame.round.setText("Round: " + engine.getCurrentRound());
 			boardFrame.bp.repaint();
 			boardPanel.repaint();
 			break;
 		case STARTING:
 			controlPanel.roundText.setText("0");
+			controlPanel.powerText.setText("0");
+			controlPanel.delayText.setText("0");
 			break;
 		case MOUSEMOVED:
 			configPanel.setMouseCoords(BoardPanel.MouseCoords);

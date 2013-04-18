@@ -25,6 +25,8 @@ public final class ControlPanel extends JPanel{
 	protected JButton pause; 
 	protected JButton stop;
 	protected JTextField roundText;
+	protected JTextField powerText;
+	protected JTextField delayText;
 	protected JButton boardPanel;
 	
 	protected ControlPanel(){
@@ -77,10 +79,25 @@ public final class ControlPanel extends JPanel{
 		roundText = new JTextField();
 		roundText.setEnabled(false);
 		roundText.setEditable(false);
-		roundText.setPreferredSize(new Dimension(100, 25));
+		roundText.setPreferredSize(new Dimension(50, 25));
 		add(label);
 		add(roundText);
 		
+		label = new JLabel("Power: ");
+		powerText = new JTextField();
+		powerText.setEnabled(false);
+		powerText.setEditable(false);
+		powerText.setPreferredSize(new Dimension(50, 25));
+		add(label);
+		add(powerText);
+
+		label = new JLabel("Delay: ");
+		delayText = new JTextField();
+		delayText.setEnabled(false);
+		delayText.setEditable(false);
+		delayText.setPreferredSize(new Dimension(50, 25));
+		add(label);
+		add(delayText);
 	}
 	protected void addListener(ActionListener a){
 		begin.addActionListener(a);

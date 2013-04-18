@@ -108,7 +108,7 @@ public final class ConfigurationPanel extends JPanel implements ChangeListener, 
 		this.add(panel);
 
 		speedSlider = new JSlider(0, 1000);
-		speedSlider.setValue(50);
+		speedSlider.setValue(30);
 		panel = new JPanel(new FlowLayout());
 		panel.add(new JLabel("Delay (0 - 1000ms):"));
 		panel.add(speedSlider);

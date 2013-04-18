@@ -5,10 +5,10 @@ import java.util.ArrayList;
 
 public class Plane extends GameObject {
 
-	private static double MAX_BEARING_CHANGE = 10.0;
-	public static double VELOCITY = 1.0;
+	public static final double MAX_BEARING_CHANGE = 10.0;
+	public static final double VELOCITY = 1.0;
 	private int departureTime = 0;
-	private double bearing = -1;
+	protected double bearing = -1;
 
 	private double destinationX;
 	private double destinationY;
@@ -48,8 +48,8 @@ public class Plane extends GameObject {
 		return bearing;
 	}
 	
-	public void setBearing(double bearing) {
-		this.bearing = bearing;
+	public void setBearing(double b) {
+		bearing = b;
 	}
 	
 	public int getDepartureTime(){
@@ -112,7 +112,6 @@ public class Plane extends GameObject {
 		}
 	}
 	
-	
 	public boolean move(double newBearing) {
 		// if the newBearing is -1, then leave it on the ground
 		if ((bearing == -1 && newBearing == -1))
@@ -147,4 +146,6 @@ public class Plane extends GameObject {
 		
 		return true;
 	}
+
+	
 }

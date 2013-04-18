@@ -44,7 +44,7 @@ import airplane.sim.ui.GUI;;
 public final class GameEngine 
 {
 
-	private GameConfig config;
+	static public GameConfig config;
 	private Board board;
 	// private PlayerWrapper player;
 	private int round = 0;
@@ -98,6 +98,14 @@ public final class GameEngine
 	public int getCurrentRound()
 	{
 		return round;
+	}
+	
+	public int getPower() {
+		return board.powerUsed;
+	}
+	
+	public int getDelay() {
+		return board.delay;
 	}
 
 	public GameConfig getConfig()
@@ -170,7 +178,7 @@ public final class GameEngine
 						if (p.move(board.bearings[i])) {
 							if (distance(p.getX(), p.getY(), xCoords[i], yCoords[i]) > p.getVelocity() + EPSILON) {
 								System.err.println("ERROR! Plane moved by more than DISTANCE!");
-								gui.setErrorMessage("Error! Plane moved by more than allowable distance!");
+								gui.setErrorMessage("Error! Plane " + i + " moved by more than allowable distance!");
 								notifyListeners(GameUpdateType.ERROR);
 								return false;
 							}
@@ -180,7 +188,7 @@ public final class GameEngine
 						}
 						else {
 							System.err.println("ERROR! illegal move!");
-							gui.setErrorMessage("Error! Plane tried to make illegal move!");
+							gui.setErrorMessage("Error! Plane " + i + " tried to make illegal move from bearing " + p.getBearing() + " to " + board.bearings[i]);
 							notifyListeners(GameUpdateType.ERROR);
 							return false;
 						}
@@ -190,6 +198,12 @@ public final class GameEngine
 						if (p.getDepartureTime() <= round) {
 							board.delay++;
 						}
+					}
+					else if (board.bearings[i] < -2) {
+						System.err.println("ERROR! illegal move!");
+						gui.setErrorMessage("Error! Plane " + i + " tried to make illegal move from bearing " + p.getBearing() + " to " + board.bearings[i]);
+						notifyListeners(GameUpdateType.ERROR);
+						return false;
 					}
 				}
 			}
@@ -204,7 +218,7 @@ public final class GameEngine
 				if(p.getBearing() != -2)
 				{
 					// if it's within 0.5 of the destination, that's good enough
-    				if (p.getLocation().distance(p.getDestination()) < 0.5) {
+    				if (p.getLocation().distance(p.getDestination()) <= 0.5) {
 						p.setBearing(-2);
 						board.bearings[i] = -2;
 						board.planesLanded++;
